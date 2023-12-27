@@ -1,0 +1,27 @@
+[Unit]
+Description={{ app_name }} service with docker compose
+Requires=docker.service network-online.target
+After=docker.service network-online.target
+
+[Service]
+Type=simple
+TimeoutStartSec=15min
+Restart=always
+
+RemainAfterExit=true
+WorkingDirectory=/opt/{{ app_name }}
+
+# Start
+ExecStartPre={{ adguardhome_docker_executable_path.stdout }} compose pull --quiet --ignore-pull-failures
+ExecStartPre={{ adguardhome_docker_executable_path.stdout }} compose build --pull
+ExecStart={{ adguardhome_docker_executable_path.stdout }} compose up -d --remove-orphans
+
+# Start
+ExecStop={{ adguardhome_docker_executable_path.stdout }} compose down --remove-orphans
+
+# Reload
+ExecReload={{ adguardhome_docker_executable_path.stdout }} compose pull --quiet --ignore-pull-failures
+ExecReload={{ adguardhome_docker_executable_path.stdout }} compose build --pull
+
+[Install]
+WantedBy=multi-user.target

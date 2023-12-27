@@ -1,0 +1,51 @@
+---
+# General config
+adguardhome_docker_network_name: "web"
+adguardhome_docker_base_path: "/opt"
+adguardhome_docker_timezone: "Europe/Berlin"
+
+# User/Group of the stack. Everything is mapped to this, instead of root.
+adguardhome_docker_user: "homelab"
+adguardhome_docker_uid: "900"
+adguardhome_docker_group: "homelab"
+adguardhome_docker_gid: "900"
+adguardhome_docker_user_system: true
+
+# which container version to install
+# https://hub.docker.com/_/adguardhome/tags
+# can also be latest
+adguardhome_docker_version: "adguard/adguardhome:latest"
+
+# additional docker compose environment varaibles
+# https://github.com/felddy/foundryvtt-docker?tab=readme-ov-file#optional-variables
+adguardhome_docker_environment_variables: []
+adguardhome_docker_volumes:
+  - "/opt/adguardhome/conf:/opt/adguardhome/conf"
+  - "/opt/adguardhome/work:/opt/adguardhome/work"
+
+# which port to expose. can be empty
+adguardhome_docker_ports:
+  - "53:53/tcp"      # (unencrypted) DNS
+  - "53:53/udp"      # (unencrypted) DNS
+  - "67:67/udp"      # DHCP
+  - "68:68/udp"      # DHCP
+  - "80:80/tcp"      # Admin-WebUI & DNS over HTTPS
+  - "443:443/tcp"    # Admin-WebUI & DNS over HTTPS
+  - "443:443/udp"    # Admin-WebUI & DNS over HTTPS
+  - "3000:3000/tcp"  # First
+  - "853:853/tcp"    # DNS over TLS
+  - "853:853/udp"    # DNS over Quic
+  - "784:784/udp"    # DNS over Quic
+  - "8853:8853/udp"  # DNS over Quic
+  - "5443:5443/tcp"  # DNSCrypt
+  - "5443:5443/udp"  # DNSCrypt
+
+adguardhome_docker_labels:
+  - "traefik.enable=false"
+# - "traefik.enable=true"
+# - "traefik.http.routers.adguardhome.entryPoints=https"
+# - "traefik.http.routers.adguardhome.rule=Host(`adguardhome.example.com`)"
+# - "traefik.http.routers.adguardhome.tls.certResolver=letsEncrypt"
+# - "traefik.http.routers.adguardhome.tls=true"
+#  - "traefik.http.routers.adguardhome.service=adguardhome"
+#  - "traefik.http.routers.adguardhome.loadbalancer.server.port=80"

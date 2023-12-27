@@ -1,0 +1,62 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    verify:
+      package: "example"
+      compose_file: "/opt/adguardhome/docker-compose.yml"
+      compose_line: '    image: "adguard/adguardhome:latest"'
+      compose_owner: "homelab"
+      compose_group: "homelab"
+      compose_mode: "0640"
+      service_file: "/etc/systemd/system/adguardhome.service"
+      service_line: 'Description=adguardhome service with docker compose'
+      service_owner: "root"
+      service_group: "root"
+      service_mode: "0770"
+      daemon: "adguardhome"
+
+  tasks:
+    - name: SmokeTests
+      ansible.builtin.debug:
+        msg:
+          - "ansible_version => {{ ansible_version }}"
+          - "ansible_distribution => {{ ansible_distribution }}"
+          - "ansible_distribution_major_version => {{ ansible_distribution_major_version }}"
+          - "ansible_os_family  => {{ ansible_os_family }}"
+          - "ansible_system  => {{ ansible_system }}"
+
+    - name: "Check conf file {{ verify.compose_file }}"
+      ansible.builtin.lineinfile:
+        name: "{{ verify.compose_file }}"
+        line: "{{ verify.compose_line }}"
+        state: present
+        owner: "{{ verify.compose_owner }}"
+        group: "{{ verify.compose_group }}"
+        mode: "{{ verify.compose_mode }}"
+      check_mode: true
+      register: molecule_hcl
+      failed_when: (molecule_hcl is changed) or (molecule_hcl is failed)
+
+    - name: "Check service file {{ verify.service_file }}"
+      ansible.builtin.lineinfile:
+        name: "{{ verify.service_file }}"
+        line: "{{ verify.service_line }}"
+        state: present
+        owner: "{{ verify.service_owner }}"
+        group: "{{ verify.service_group }}"
+        mode: "{{ verify.service_mode }}"
+      check_mode: true
+      register: molecule_hcl
+      failed_when: (molecule_hcl is changed) or (molecule_hcl is failed)
+
+    - name: "Check daemon {{ verify.daemon }}"
+      ansible.builtin.service:
+        name: "{{ verify.daemon }}"
+        state: started
+        enabled: true
+      check_mode: true
+      register: molecule_service
+      failed_when: (molecule_service is changed) or (molecule_service is failed)

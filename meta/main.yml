@@ -1,0 +1,36 @@
+---
+galaxy_info:
+  author: mullholland
+  namespace: mullholland
+  role_name: adguardhome_docker
+  description: Installs and configures adguardhome container based on official adguardhome docker container
+  license: MIT
+  company: none
+  min_ansible_version: "2.10"
+
+  platforms:
+    - name: EL
+      versions:
+        - all
+    # - name: Amazon
+    #   versions:
+    #     - Candidate
+    - name: Fedora
+      versions:
+        - "38"
+        - "39"
+    - name: Ubuntu
+      versions:
+        - "all"
+    - name: Debian
+      versions:
+        - all
+
+  galaxy_tags:
+    - cloud
+    - development
+    - webserver
+    - adguardhome
+    - proxy
+
+dependencies: []

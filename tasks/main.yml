@@ -1,0 +1,12 @@
+---
+- name: create user
+  ansible.builtin.include_tasks:
+    file: user.yml
+
+- name: create docker network
+  ansible.builtin.include_tasks:
+    file: docker.yml
+
+- name: prepare adguardhome
+  ansible.builtin.include_tasks:
+    file: adguardhome.yml

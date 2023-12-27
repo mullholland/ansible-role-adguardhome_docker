@@ -1,0 +1,53 @@
+---
+- name: adguardhome | set application facts
+  ansible.builtin.set_fact:
+    app_name: "adguardhome"
+    app_image: "{{ adguardhome_docker_version }}"
+    app_network: "{{ adguardhome_docker_network_name }}"
+    app_base_path: "{{ adguardhome_docker_base_path }}"
+    app_user: "{{ adguardhome_docker_user }}"
+    app_uid: "{{ adguardhome_docker_uid }}"
+    app_group: "{{ adguardhome_docker_group }}"
+    app_gid: "{{ adguardhome_docker_gid }}"
+    app_timezone: "{{ adguardhome_docker_timezone }}"
+    app_environment_variables: "{{ adguardhome_docker_environment_variables }}"
+    app_volumes: "{{ adguardhome_docker_volumes }}"
+    app_labels: "{{ adguardhome_docker_labels }}"
+    app_ports: "{{ adguardhome_docker_ports }}"
+
+- name: "adguardhome | Ensure app folders exists"
+  ansible.builtin.file:
+    name: '{{ app_base_path }}/{{ app_name }}/{{ item }}'
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: "0770"
+    state: directory
+  with_items:
+    - "conf"
+    - "work"
+
+- name: adguardhome | get docker executable path
+  ansible.builtin.command:
+    cmd: "which docker"
+  changed_when: false
+  register: adguardhome_docker_executable_path
+
+- name: "adguardhome | create docker-compose.yml"
+  ansible.builtin.template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ app_base_path }}/{{ app_name }}/docker-compose.yml"
+    mode: "0640"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+  notify: adguardhome_restart
+
+- name: "adguardhome | Create systemd service"
+  ansible.builtin.template:
+    src: "systemd.service.j2"
+    dest: "/etc/systemd/system/{{ app_name }}.service"
+    mode: "0770"
+    owner: "root"
+    group: "root"
+  notify:
+    - adguardhome_systemd_reload
+    - adguardhome_restart

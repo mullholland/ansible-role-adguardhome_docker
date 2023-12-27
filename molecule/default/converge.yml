@@ -1,0 +1,15 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    adguardhome_docker_config:
+      tls:
+        options:
+          modern:
+            minVersion: "VersionTLS13"
+            sniStrict: true
+
+  roles:
+    - role: "ansible-role-adguardhome_docker"

@@ -1,0 +1,13 @@
+---
+- name: Prepare
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    pip_packages:
+      - "docker"
+
+  roles:
+    - role: mullholland.docker
+    - role: mullholland.repository_epel
+    - role: mullholland.pip

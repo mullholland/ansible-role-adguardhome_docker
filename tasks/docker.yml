@@ -1,0 +1,4 @@
+---
+- name: docker | Ensure that docker network exists
+  community.docker.docker_network:
+    name: "{{ adguardhome_docker_network_name }}"

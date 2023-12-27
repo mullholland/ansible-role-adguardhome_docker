@@ -1,0 +1,36 @@
+---
+version: "3.3"
+
+networks:
+  {{ app_network }}:
+    external: true
+
+services:
+  adguardhome:
+    image: "{{ app_image }}"
+    hostname: "{{ app_name }}"
+    init: true
+    restart: always
+    volumes:
+{% for app_volume in app_volumes %}
+      - {{ app_volume }}
+{% endfor %}
+    environment:
+      PUID: {{ app_uid }}
+      PGID: {{ app_gid }}
+      TZ: {{ app_timezone }}
+{% for app_environment in app_environment_variables %}
+      {{ app_environment }}
+{% endfor %}
+    networks:
+      - {{ app_network }}
+{% if app_ports and app_ports|length %}
+    ports:
+{% for app_port in app_ports %}
+      - {{ app_port }}
+{% endfor %}{% endif %}
+{% if adguardhome_docker_labels and adguardhome_docker_labels|length %}
+    labels:
+{% for adguardhome_docker_label in adguardhome_docker_labels %}
+      - "{{ adguardhome_docker_label}}"
+{% endfor %}{% endif %}

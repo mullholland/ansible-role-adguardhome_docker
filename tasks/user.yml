@@ -1,0 +1,13 @@
+---
+- name: user | Ensure group exists
+  ansible.builtin.group:
+    name: "{{ adguardhome_docker_group }}"
+    gid: "{{ adguardhome_docker_gid }}"
+    state: present
+
+- name: user | Ensure user exists with gid
+  ansible.builtin.user:
+    name: "{{ adguardhome_docker_user }}"
+    uid: "{{ adguardhome_docker_uid }}"
+    system: "{{ adguardhome_docker_user_system | default(omit) }}"
+    state: "present"
