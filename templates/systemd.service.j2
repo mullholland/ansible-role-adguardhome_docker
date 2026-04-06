@@ -1,5 +1,5 @@
 [Unit]
-Description={{ app_name }} service with docker compose
+Description=adguardhome service with docker compose
 Requires=docker.service network-online.target
 After=docker.service network-online.target
 
@@ -9,7 +9,7 @@ TimeoutStartSec=15min
 Restart=always
 
 RemainAfterExit=true
-WorkingDirectory=/opt/{{ app_name }}
+WorkingDirectory=/opt/adguardhome
 
 # Start
 ExecStartPre={{ adguardhome_docker_executable_path.stdout }} compose pull --quiet --ignore-pull-failures

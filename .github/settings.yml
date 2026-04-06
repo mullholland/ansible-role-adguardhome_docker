@@ -5,4 +5,4 @@
 repository:
   description: Installs and configures adguardhome container based on official adguardhome docker container
   homepage: https://mullholland.net
-  topics: cloud, development, webserver, adguardhome, proxy, ansible, molecule, tox, playbook
+  topics: cloud, development, webserver, adguardhome, proxy, ansible, molecule, playbook
