@@ -17,8 +17,7 @@ galaxy_info:
     #     - Candidate
     - name: Fedora
       versions:
-        - "38"
-        - "39"
+        - "all"
     - name: Ubuntu
       versions:
         - "all"

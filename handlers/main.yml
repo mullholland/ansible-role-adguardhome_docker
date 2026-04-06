@@ -1,9 +1,9 @@
 ---
-- name: adguardhome_systemd_reload
+- name: Adguardhome_systemd_reload
   ansible.builtin.systemd:
     daemon_reload: yes
 
-- name: adguardhome_restart
+- name: Adguardhome_restart
   ansible.builtin.service:
     name: "adguardhome"
     state: restarted

@@ -12,5 +12,4 @@ rules:
   truthy: disable
 
 ignore: |
-  .tox/
   .cache/

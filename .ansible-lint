@@ -13,14 +13,9 @@ exclude_paths:
   - molecule/**/converge.yml
   - molecule/**/verify.yml
   - molecule/**/collections.yml
-  - .tox
   - .cache
   - .github
   - requirements.yml
-
-skip_list:
-  - yaml[truthy]
-  - name[casing]
 
 enable_list:
   - name[prefix]
