@@ -1,0 +1,13 @@
+digraph PhiloDilemma {
+  label = "Robert de Bock" ;
+  overlap=false
+  {
+    "adguardhome_docker" [fillcolor=yellow style=filled penwidth=3]
+    "mullholland.repository_epel" [fillcolor=green style=filled]
+    "mullholland.docker" [fillcolor=green style=filled]
+    "mullholland.pip" [fillcolor=green style=filled]
+  }
+  "adguardhome_docker" -> "mullholland.repository_epel"
+  "adguardhome_docker" -> "mullholland.docker"
+  "adguardhome_docker" -> "mullholland.pip"
+}
