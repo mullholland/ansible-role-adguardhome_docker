@@ -12,4 +12,4 @@
             sniStrict: true
 
   roles:
-    - role: "ansible-role-adguardhome_docker"
+    - role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"

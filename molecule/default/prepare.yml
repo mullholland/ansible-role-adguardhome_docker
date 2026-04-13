@@ -3,11 +3,29 @@
   hosts: all
   become: true
   gather_facts: true
-  vars:
-    pip_packages:
-      - "docker"
+
+  pre_tasks:
+    - name: Install python3-docker (Debian/Ubuntu)
+      ansible.builtin.package:
+        name: "python3-docker"
+      when:
+        - ansible_facts['os_family'] == "Debian"
+
+    - name: Install python3-packaging and python3-pip (RedHat)
+      ansible.builtin.package:
+        name:
+          - "python3-packaging"
+          - "python3-pip"
+        state: present
+      when:
+        - ansible_facts['os_family'] == "RedHat"
+
+    - name: Install docker via pip (RedHat)
+      ansible.builtin.pip:
+        name: "docker"
+        state: present
+      when:
+        - ansible_facts['os_family'] == "RedHat"
 
   roles:
     - role: mullholland.docker
-    - role: mullholland.repository_epel
-    - role: mullholland.pip

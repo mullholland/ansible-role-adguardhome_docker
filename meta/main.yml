@@ -12,9 +12,9 @@ galaxy_info:
     - name: EL
       versions:
         - all
-    # - name: Amazon
-    #   versions:
-    #     - Candidate
+    - name: Amazon
+      versions:
+        - all
     - name: Fedora
       versions:
         - "all"

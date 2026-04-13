@@ -5,7 +5,6 @@
   gather_facts: true
   vars:
     verify:
-      package: "example"
       compose_file: "/opt/adguardhome/docker-compose.yml"
       compose_line: '    image: "adguard/adguardhome:latest"'
       compose_owner: "homelab"
@@ -23,40 +22,64 @@
       ansible.builtin.debug:
         msg:
           - "ansible_version => {{ ansible_version }}"
-          - "ansible_distribution => {{ ansible_distribution }}"
-          - "ansible_distribution_major_version => {{ ansible_distribution_major_version }}"
-          - "ansible_os_family  => {{ ansible_os_family }}"
-          - "ansible_system  => {{ ansible_system }}"
+          - "ansible_distribution => {{ ansible_facts['distribution'] }}"
+          - "ansible_distribution_major_version => {{ ansible_facts['distribution_major_version'] }}"
+          - "ansible_os_family  => {{ ansible_facts['os_family'] }}"
+          - "ansible_system  => {{ ansible_facts['system'] }}"
 
     - name: "Check conf file {{ verify.compose_file }}"
+      ansible.builtin.stat:
+        path: "{{ verify.compose_file }}"
+      register: compose_stat
+
+    - name: Assert compose file exists with correct ownership and mode
+      ansible.builtin.assert:
+        that:
+          - compose_stat.stat.exists
+          - compose_stat.stat.pw_name == verify.compose_owner
+          - compose_stat.stat.gr_name == verify.compose_group
+          - compose_stat.stat.mode == verify.compose_mode
+        quiet: true
+        fail_msg: "Compose file {{ verify.compose_file }} missing or has wrong ownership/mode."
+
+    - name: "Check compose file contains correct image line"
       ansible.builtin.lineinfile:
         name: "{{ verify.compose_file }}"
         line: "{{ verify.compose_line }}"
         state: present
-        owner: "{{ verify.compose_owner }}"
-        group: "{{ verify.compose_group }}"
-        mode: "{{ verify.compose_mode }}"
       check_mode: true
-      register: molecule_hcl
-      failed_when: (molecule_hcl is changed) or (molecule_hcl is failed)
+      register: molecule_compose
+      failed_when: (molecule_compose is changed) or (molecule_compose is failed)
 
     - name: "Check service file {{ verify.service_file }}"
+      ansible.builtin.stat:
+        path: "{{ verify.service_file }}"
+      register: service_stat
+
+    - name: Assert service file exists with correct ownership and mode
+      ansible.builtin.assert:
+        that:
+          - service_stat.stat.exists
+          - service_stat.stat.pw_name == verify.service_owner
+          - service_stat.stat.gr_name == verify.service_group
+          - service_stat.stat.mode == verify.service_mode
+        quiet: true
+        fail_msg: "Service file {{ verify.service_file }} missing or has wrong ownership/mode."
+
+    - name: "Check service file contains correct description"
       ansible.builtin.lineinfile:
         name: "{{ verify.service_file }}"
         line: "{{ verify.service_line }}"
         state: present
-        owner: "{{ verify.service_owner }}"
-        group: "{{ verify.service_group }}"
-        mode: "{{ verify.service_mode }}"
       check_mode: true
-      register: molecule_hcl
-      failed_when: (molecule_hcl is changed) or (molecule_hcl is failed)
+      register: molecule_service
+      failed_when: (molecule_service is changed) or (molecule_service is failed)
 
-    - name: "Check daemon {{ verify.daemon }}"
+    - name: "Check daemon {{ verify.daemon }} is enabled"
       ansible.builtin.service:
         name: "{{ verify.daemon }}"
         state: started
         enabled: true
       check_mode: true
-      register: molecule_service
-      failed_when: (molecule_service is changed) or (molecule_service is failed)
+      register: molecule_daemon
+      failed_when: (molecule_daemon is changed) or (molecule_daemon is failed)

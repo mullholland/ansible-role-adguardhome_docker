@@ -9,7 +9,7 @@ TimeoutStartSec=15min
 Restart=always
 
 RemainAfterExit=true
-WorkingDirectory=/opt/adguardhome
+WorkingDirectory={{ adguardhome_docker_base_path }}/adguardhome
 
 # Start
 ExecStartPre={{ adguardhome_docker_executable_path.stdout }} compose pull --quiet --ignore-pull-failures

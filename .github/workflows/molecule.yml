@@ -10,6 +10,8 @@ on:
     tags_ignore:
       - '*'
   pull_request:
+    branches:
+      - master
   schedule:
     - cron: '1 1 1 * *'
 
@@ -18,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: ansible-lint
         uses: ansible/ansible-lint@main
   test:
@@ -35,6 +37,8 @@ jobs:
             tag: "9"
           - image: "redhat"
             tag: "10"
+          - image: "amazonlinux"
+            tag: "2023"
           - image: "fedora"
             tag: "42"
           - image: "fedora"
@@ -49,7 +53,7 @@ jobs:
             tag: "trixie"
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: "${{ github.repository }}"
       # - name: disable apparmor for mysql

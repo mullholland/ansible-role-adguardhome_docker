@@ -24,7 +24,7 @@ This example is taken from [`molecule/default/converge.yml`](https://github.com/
             sniStrict: true
 
   roles:
-    - role: "mullholland.adguardhome_docker"
+    - role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"
 ```
 
 The machine needs to be prepared. In CI this is done using [`molecule/default/prepare.yml`](https://github.com/mullholland/ansible-role-adguardhome_docker/blob/master/molecule/default/prepare.yml):
@@ -35,14 +35,32 @@ The machine needs to be prepared. In CI this is done using [`molecule/default/pr
   hosts: all
   become: true
   gather_facts: true
-  vars:
-    pip_packages:
-      - "docker"
+
+  pre_tasks:
+    - name: Install python3-docker (Debian/Ubuntu)
+      ansible.builtin.package:
+        name: "python3-docker"
+      when:
+        - ansible_facts['os_family'] == "Debian"
+
+    - name: Install python3-packaging and python3-pip (RedHat)
+      ansible.builtin.package:
+        name:
+          - "python3-packaging"
+          - "python3-pip"
+        state: present
+      when:
+        - ansible_facts['os_family'] == "RedHat"
+
+    - name: Install docker via pip (RedHat)
+      ansible.builtin.pip:
+        name: "docker"
+        state: present
+      when:
+        - ansible_facts['os_family'] == "RedHat"
 
   roles:
     - role: mullholland.docker
-    - role: mullholland.repository_epel
-    - role: mullholland.pip
 ```
 
 
@@ -114,16 +132,11 @@ The following roles are used to prepare a system. You can prepare your system in
 
 | Requirement | GitHub | GitLab |
 |-------------|--------|--------|
-|[mullholland.repository_epel](https://galaxy.ansible.com/mullholland/repository_epel)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-repository_epel/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-repository_epel/actions)|[![Build Status GitLab](https://gitlab.com/mullholland-github-mirror/ansible-role-repository_epel/badges/master/pipeline.svg)](https://gitlab.com/mullholland-github-mirror/ansible-role-repository_epel)|
 |[mullholland.docker](https://galaxy.ansible.com/mullholland/docker)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-docker/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-docker/actions)|[![Build Status GitLab](https://gitlab.com/mullholland-github-mirror/ansible-role-docker/badges/master/pipeline.svg)](https://gitlab.com/mullholland-github-mirror/ansible-role-docker)|
-|[mullholland.pip](https://galaxy.ansible.com/mullholland/pip)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-pip/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-pip/actions)|[![Build Status GitLab](https://gitlab.com/mullholland-github-mirror/ansible-role-pip/badges/master/pipeline.svg)](https://gitlab.com/mullholland-github-mirror/ansible-role-pip)|
 
 ## [Context](#context)
 
 This role is a part of many compatible roles. Have a look at [the documentation of these roles](https://mullholland.net) for further information.
-
-Here is an overview of related roles:
-![dependencies](https://raw.githubusercontent.com/mullholland/ansible-role-adguardhome_docker/png/requirements.png "Dependencies")
 
 ## [Compatibility](#compatibility)
 
@@ -132,15 +145,16 @@ This role has been tested on these [container images](https://hub.docker.com/u/m
 |container|tags|
 |---------|----|
 |[EL](https://hub.docker.com/r/mullholland/enterpriselinux)|all|
+|[Amazon](https://hub.docker.com/r/mullholland/amazonlinux)|all|
 |[Fedora](https://hub.docker.com/r/mullholland/fedora/)|all|
 |[Ubuntu](https://hub.docker.com/r/mullholland/ubuntu)|all|
 |[Debian](https://hub.docker.com/r/mullholland/debian)|all|
 
 The minimum version of Ansible required is 2.10, tests have been done to:
 
+- The version before the previous version.
 - The previous version.
 - The current version.
-- The development version.
 
 If you find issues, please register them in [GitHub](https://github.com/mullholland/ansible-role-adguardhome_docker/issues).
 
