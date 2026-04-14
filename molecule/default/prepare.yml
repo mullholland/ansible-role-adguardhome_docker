@@ -5,11 +5,30 @@
   gather_facts: true
 
   pre_tasks:
-    - name: Install python3-docker (Debian/Ubuntu)
+    - name: Install python3-docker via apt (Debian 13+)
       ansible.builtin.package:
         name: "python3-docker"
+        state: present
+      when:
+        - ansible_facts['distribution'] == "Debian"
+        - ansible_facts['distribution_major_version'] | int != 13
+
+    - name: Install python3-docker via pip venv (Debian/Ubuntu)
+      ansible.builtin.pip:
+        name: "docker"
+        state: present
+        virtualenv: "/opt/ansible-venv"
+        virtualenv_command: "python3 -m venv"
       when:
         - ansible_facts['os_family'] == "Debian"
+        - ansible_facts['distribution_major_version'] | int == 13
+
+    - name: Set ansible_python_interpreter to venv (Debian/Ubuntu)
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: "/opt/ansible-venv/bin/python3"
+      when:
+        - ansible_facts['os_family'] == "Debian"
+        - ansible_facts['distribution_major_version'] | int == 13
 
     - name: Install python3-packaging and python3-pip (RedHat)
       ansible.builtin.package:
