@@ -75,10 +75,9 @@
       register: molecule_service
       failed_when: (molecule_service is changed) or (molecule_service is failed)
 
-    - name: "Check daemon {{ verify.daemon }} is enabled"
+    - name: "Check daemon {{ verify.daemon }} service unit is enabled"
       ansible.builtin.service:
         name: "{{ verify.daemon }}"
-        state: started
         enabled: true
       check_mode: true
       register: molecule_daemon

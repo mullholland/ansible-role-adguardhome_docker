@@ -144,9 +144,6 @@ This role has been tested on these [container images](https://hub.docker.com/u/m
 
 |container|tags|
 |---------|----|
-|[EL](https://hub.docker.com/r/mullholland/enterpriselinux)|all|
-|[Amazon](https://hub.docker.com/r/mullholland/amazonlinux)|all|
-|[Fedora](https://hub.docker.com/r/mullholland/fedora/)|all|
 |[Ubuntu](https://hub.docker.com/r/mullholland/ubuntu)|all|
 |[Debian](https://hub.docker.com/r/mullholland/debian)|all|
 

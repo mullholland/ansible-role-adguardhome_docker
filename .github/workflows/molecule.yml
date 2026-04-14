@@ -31,18 +31,6 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - image: "redhat"
-            tag: "8"
-          - image: "redhat"
-            tag: "9"
-          - image: "redhat"
-            tag: "10"
-          - image: "amazonlinux"
-            tag: "2023"
-          - image: "fedora"
-            tag: "42"
-          - image: "fedora"
-            tag: "43"
           - image: "ubuntu"
             tag: "noble"
           - image: "ubuntu"

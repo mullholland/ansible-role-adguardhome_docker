@@ -9,15 +9,6 @@ galaxy_info:
   min_ansible_version: "2.10"
 
   platforms:
-    - name: EL
-      versions:
-        - all
-    - name: Amazon
-      versions:
-        - all
-    - name: Fedora
-      versions:
-        - "all"
     - name: Ubuntu
       versions:
         - "all"
