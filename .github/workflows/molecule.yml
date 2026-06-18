@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: ansible-lint
         uses: ansible/ansible-lint@main
   test:
@@ -41,7 +41,7 @@ jobs:
             tag: "trixie"
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: "${{ github.repository }}"
       # - name: disable apparmor for mysql
