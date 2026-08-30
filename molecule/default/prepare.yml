@@ -22,14 +22,20 @@
       when:
         - ansible_facts['os_family'] == "RedHat"
 
-    # python3-packaging isn't available as an RPM on EL - ansible's pip
-    # module needs it importable to compare versions, so it's installed via
-    # pip alongside docker.
-    - name: Install docker and packaging via pip (RedHat)
+    # ansible.builtin.pip needs "packaging" importable on the target BEFORE
+    # it runs at all (it's used internally to compare versions), so it can't
+    # be installed via the same pip task that also installs docker - that's
+    # a chicken-and-egg problem. Bootstrapping it with a raw pip invocation
+    # first sidesteps the module's own dependency on itself.
+    - name: Bootstrap packaging for ansible's pip module (RedHat)
+      ansible.builtin.command: python3 -m pip install packaging
+      changed_when: true
+      when:
+        - ansible_facts['os_family'] == "RedHat"
+
+    - name: Install docker via pip (RedHat)
       ansible.builtin.pip:
-        name:
-          - "docker"
-          - "packaging"
+        name: "docker"
         state: present
       when:
         - ansible_facts['os_family'] == "RedHat"
