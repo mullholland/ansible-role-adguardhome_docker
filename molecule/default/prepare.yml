@@ -1,25 +1,35 @@
 ---
 - name: Prepare
   hosts: all
-  become: true
   gather_facts: true
 
   pre_tasks:
     - name: Install python3-docker via apt (Debian)
-      ansible.builtin.package:
+      ansible.builtin.apt:
         name:
           - "python3-docker"
           - "python3-requests"
         state: present
+        update_cache: true
       when:
         - ansible_facts['os_family'] == "Debian"
 
-    - name: Install python3-packaging and python3-pip (RedHat)
+    - name: Install python3-pip (RedHat)
       ansible.builtin.package:
         name:
-          - "python3-packaging"
           - "python3-pip"
         state: present
+      when:
+        - ansible_facts['os_family'] == "RedHat"
+
+    # ansible.builtin.pip needs "packaging" importable on the target BEFORE
+    # it runs at all (it's used internally to compare versions), so it can't
+    # be installed via the same pip task that also installs docker - that's
+    # a chicken-and-egg problem. Bootstrapping it with a raw pip invocation
+    # first sidesteps the module's own dependency on itself.
+    - name: Bootstrap packaging for ansible's pip module (RedHat)
+      ansible.builtin.command: python3 -m pip install packaging
+      changed_when: true
       when:
         - ansible_facts['os_family'] == "RedHat"
 

@@ -1,7 +1,6 @@
 ---
 - name: Converge
   hosts: all
-  become: true
   gather_facts: true
   vars:
     adguardhome_docker_config:

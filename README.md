@@ -13,7 +13,6 @@ This example is taken from [`molecule/default/converge.yml`](https://github.com/
 ---
 - name: Converge
   hosts: all
-  become: true
   gather_facts: true
   vars:
     adguardhome_docker_config:
@@ -33,41 +32,35 @@ The machine needs to be prepared. In CI this is done using [`molecule/default/pr
 ---
 - name: Prepare
   hosts: all
-  become: true
   gather_facts: true
 
   pre_tasks:
-    - name: Install python3-docker via apt (Debian 13+)
-      ansible.builtin.package:
-        name: "python3-docker"
+    - name: Install python3-docker via apt (Debian)
+      ansible.builtin.apt:
+        name:
+          - "python3-docker"
+          - "python3-requests"
         state: present
-      when:
-        - ansible_facts['distribution'] == "Debian"
-        - ansible_facts['distribution_major_version'] | int != 13
-
-    - name: Install python3-docker via pip venv (Debian/Ubuntu)
-      ansible.builtin.pip:
-        name: "docker"
-        state: present
-        virtualenv: "/opt/ansible-venv"
-        virtualenv_command: "python3 -m venv"
+        update_cache: true
       when:
         - ansible_facts['os_family'] == "Debian"
-        - ansible_facts['distribution_major_version'] | int == 13
 
-    - name: Set ansible_python_interpreter to venv (Debian/Ubuntu)
-      ansible.builtin.set_fact:
-        ansible_python_interpreter: "/opt/ansible-venv/bin/python3"
-      when:
-        - ansible_facts['os_family'] == "Debian"
-        - ansible_facts['distribution_major_version'] | int == 13
-
-    - name: Install python3-packaging and python3-pip (RedHat)
+    - name: Install python3-pip (RedHat)
       ansible.builtin.package:
         name:
-          - "python3-packaging"
           - "python3-pip"
         state: present
+      when:
+        - ansible_facts['os_family'] == "RedHat"
+
+    # ansible.builtin.pip needs "packaging" importable on the target BEFORE
+    # it runs at all (it's used internally to compare versions), so it can't
+    # be installed via the same pip task that also installs docker - that's
+    # a chicken-and-egg problem. Bootstrapping it with a raw pip invocation
+    # first sidesteps the module's own dependency on itself.
+    - name: Bootstrap packaging for ansible's pip module (RedHat)
+      ansible.builtin.command: python3 -m pip install packaging
+      changed_when: true
       when:
         - ansible_facts['os_family'] == "RedHat"
 
@@ -77,6 +70,15 @@ The machine needs to be prepared. In CI this is done using [`molecule/default/pr
         state: present
       when:
         - ansible_facts['os_family'] == "RedHat"
+
+    - name: Get python requests version
+      ansible.builtin.command: python3 -c "import requests; print(requests.__version__)"
+      register: requests_version
+      changed_when: false
+
+    - name: Show python requests version
+      ansible.builtin.debug:
+        msg: "requests version: {{ requests_version.stdout }}"
 
   roles:
     - role: mullholland.docker
@@ -165,6 +167,10 @@ This role has been tested on these [container images](https://hub.docker.com/u/m
 |---------|----|
 |[Ubuntu](https://hub.docker.com/r/mullholland/ubuntu)|all|
 |[Debian](https://hub.docker.com/r/mullholland/debian)|all|
+|[Fedora](https://hub.docker.com/r/mullholland/fedora/)|all|
+|[Rocky](https://hub.docker.com/r/mullholland/rockylinux)|all|
+|[AlmaLinux](https://hub.docker.com/r/mullholland/almalinux)|all|
+|[CentOS](https://hub.docker.com/r/mullholland/centos)|all|
 
 The minimum version of Ansible required is 2.10, tests have been done to:
 
