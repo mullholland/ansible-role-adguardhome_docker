@@ -15,6 +15,15 @@ galaxy_info:
     - name: Debian
       versions:
         - all
+    - name: Fedora
+      versions:
+        - all
+    - name: Rocky
+      versions:
+        - all
+    - name: AlmaLinux
+      versions:
+        - all
 
   galaxy_tags:
     - cloud

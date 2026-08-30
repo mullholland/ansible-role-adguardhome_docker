@@ -1,0 +1,10 @@
+---
+# This file is used by ansible-generator.
+
+# CentOS isn't a valid Galaxy platform name (only "EL" is), but the role
+# works on it the same way it does on Rocky/AlmaLinux, so it's added to the
+# CI matrix and README compatibility table here instead.
+extra_platforms:
+  - name: CentOS
+    versions:
+      - all

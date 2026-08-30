@@ -1,31 +1,35 @@
 ---
 - name: Prepare
   hosts: all
-  become: true
   gather_facts: true
 
   pre_tasks:
     - name: Install python3-docker via apt (Debian)
-      ansible.builtin.package:
+      ansible.builtin.apt:
         name:
           - "python3-docker"
           - "python3-requests"
         state: present
+        update_cache: true
       when:
         - ansible_facts['os_family'] == "Debian"
 
-    - name: Install python3-packaging and python3-pip (RedHat)
+    - name: Install python3-pip (RedHat)
       ansible.builtin.package:
         name:
-          - "python3-packaging"
           - "python3-pip"
         state: present
       when:
         - ansible_facts['os_family'] == "RedHat"
 
-    - name: Install docker via pip (RedHat)
+    # python3-packaging isn't available as an RPM on EL - ansible's pip
+    # module needs it importable to compare versions, so it's installed via
+    # pip alongside docker.
+    - name: Install docker and packaging via pip (RedHat)
       ansible.builtin.pip:
-        name: "docker"
+        name:
+          - "docker"
+          - "packaging"
         state: present
       when:
         - ansible_facts['os_family'] == "RedHat"
