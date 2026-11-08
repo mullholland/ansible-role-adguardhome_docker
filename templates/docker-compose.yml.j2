@@ -9,6 +9,10 @@ services:
     hostname: "adguardhome"
     init: true
     restart: always
+{% if adguardhome_docker_logging %}
+    logging:
+      {{ adguardhome_docker_logging | to_nice_yaml(indent=2) | indent(6) | trim }}
+{% endif %}
     volumes:
 {% for volume in adguardhome_docker_volumes %}
       - {{ volume }}

@@ -49,3 +49,11 @@ adguardhome_docker_labels:
 # - "traefik.http.routers.adguardhome.tls=true"
 #  - "traefik.http.routers.adguardhome.service=adguardhome"
 #  - "traefik.http.routers.adguardhome.loadbalancer.server.port=80"
+
+# Logging configuration of the container(s). Limits the json-file log size by default.
+# Set to {} to fall back to the docker daemon defaults.
+adguardhome_docker_logging:
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
